@@ -1,0 +1,12 @@
+{
+    "PORT"                            : 8060,
+    "api_url"                         : "http://localhost:8060/",
+    "database_settings"               : {
+        "host"                        : "localhost",
+        "user"                        : "root",
+        "password"                    : "yamini1234",
+        "database"                    : "test",
+        "mysqlPORT"                   : "3306",
+        "mongo_db_connection"         : "mongodb://localhost:27017/test" 
+    }
+}
