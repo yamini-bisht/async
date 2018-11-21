@@ -1,7 +1,7 @@
-var constants = require('./constants');
+const constants = require('./constants');
 
 exports.actionCompleteResponse = function (res, data, msg) {
-    var response = {
+    let response = {
         "message": msg || "Successfully completed",
         "status": constants.responseStatus.SUCCESSFUL,
         "data" : data || []
@@ -10,7 +10,7 @@ exports.actionCompleteResponse = function (res, data, msg) {
 };
 
 exports.parameterMissingResponse = function (res, err, data) {
-    var response = {
+    let response = {
         "message": err || "Insufficient information provided",
         "status": constants.responseStatus.PARAMETER_MISSING,
         "data" : data || {}
@@ -19,7 +19,7 @@ exports.parameterMissingResponse = function (res, err, data) {
 };
 
 exports.sendActionFailedResponse = function(res, data, msg, statusCode){
-    var response = {
+    let response = {
         message : msg || "Action failed. Please try again.",
         status : statusCode || constants.responseStatus.SHOW_ERROR_MESSAGE
     }
@@ -27,7 +27,7 @@ exports.sendActionFailedResponse = function(res, data, msg, statusCode){
 };
 
 exports.databaseError = function (res, err, data) {
-    var response = {
+    let response = {
         "message": err || "Database Error. Insufficient information.",
         "status": 102,
         "data" : data || {}

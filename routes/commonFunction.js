@@ -1,12 +1,11 @@
-var Promise     = require('bluebird');
-var request     = require('request');
+const Promise     = require('bluebird');
+const request     = require('request');
 
 exports.makeRequest   = makeRequest;
 
 function makeRequest (url, reqBody) {
     return new Promise((resolve, reject) => {
-        console.log("url----------->", url, reqBody);
-        var options = {
+        let options = {
             uri: url,
             method: 'POST',
             headers: {
@@ -20,9 +19,6 @@ function makeRequest (url, reqBody) {
                 console.log(error)
                 return reject(error);
             } else {
-                console.log('Status:_____________', response.statusCode);
-                console.log('Headers:-----------', JSON.stringify(response.headers));
-                console.log('Response:+++++++++++++', body);
                 return resolve(body);
             }
         });
@@ -30,10 +26,9 @@ function makeRequest (url, reqBody) {
 };
 
 exports.insertIntoTable = (tableName, insertObj) => Promise.coroutine(function*(){
-    var stmt = `INSERT INTO ${tableName} SET ?`;
+    let stmt = `INSERT INTO ${tableName} SET ?`;
     return new Promise((resolve, reject) => {
-        var query = connection.query( stmt, [insertObj], function (error, result) {
-            // console.log("this is sql query :- ",query.sql,error)
+        let query = connection.query( stmt, [insertObj], function (error, result) {
             if(error){
                 return reject(error);
             }
@@ -46,10 +41,9 @@ exports.insertIntoTable = (tableName, insertObj) => Promise.coroutine(function*(
 });
 
 exports.fetchDataFromTable = (email, password) => Promise.coroutine(function*(){
-    var stmt = ` SELECT * FROM users WHERE email = ? AND password = ? `;
+    let stmt = ` SELECT * FROM users WHERE email = ? AND password = ? `;
     return new Promise((resolve, reject) => {
-        var query = connection.query( stmt, [email, password], function (error, result) {
-            // console.log("this is sql query :- ",query.sql,error)
+        let query = connection.query( stmt, [email, password], function (error, result) {
             if(error){
                 return reject(error);
             }
