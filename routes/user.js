@@ -1,16 +1,16 @@
-var request = require('request');
-var Promise = require('bluebird');
-var Joi = require('joi');
+const request = require('request');
+const Promise = require('bluebird');
+const Joi = require('joi');
 const async = require('async');
-var emailExistence = require("email-existence");
-var fs = require('fs');
+const emailExistence = require("email-existence");
+const fs = require('fs');
 const util = require('util');
 const setImmediatePromise = util.promisify(setImmediate);
 
 
-var response = require('./responses');
-var commonFunction = require('./commonFunction');
-var moment = require('moment');
+const response = require('./responses');
+const commonFunction = require('./commonFunction');
+const moment = require('moment');
 
 exports.signUp = signUp;
 exports.signupWaterfall = signupWaterfall;
@@ -21,35 +21,32 @@ exports.signupAwait = signupAwait;
 exports.promiseToCb = promiseToCb;
 exports.timerExample = timerExample;
 exports.setImEx = setImEx;
+exports.setImmediateEx = setImmediateEx;
 
 function signUp(req, res) {
-    console.log("req.body------>", req.body);
-    var name = req.body.name;
-    var email = req.body.email;
-    var password = req.body.password;
+    let name = req.body.name;
+    let email = req.body.email;
+    let password = req.body.password;
 
-    var schema = Joi.object().keys({
+    let schema = Joi.object().keys({
         name: Joi.string().required(),
         email: Joi.string().email({ minDomainAtoms: 2 }),
         password: Joi.any().required(),
     });
 
-    var validateReq = Joi.validate({ name, email, password }, schema);
-    console.log("validateReq----->", validateReq);
+    let validateReq = Joi.validate({ name, email, password }, schema);
     if (validateReq.error) {
         console.log(validateReq.error);
         return response.parameterMissingResponse(res, "", []);
     }
 
     Promise.coroutine(function* () {
-        var insertObj = {
+        let insertObj = {
             name: name,
             email: email,
             password: password,
         }
-        console.log("insertObj-------->", insertObj);
-        var insert = yield commonFunction.insertIntoTable("users", insertObj);
-        console.log("insert-------->", insert);
+        let insert = yield commonFunction.insertIntoTable("users", insertObj);
         if (insert.affectedRows == 1) {
             return "Data successfully inserted";
         }
@@ -62,20 +59,17 @@ function signUp(req, res) {
 }
 
 function signupWaterfall(req, res) {
-    console.log("new signup");
-    console.log("req.body------>", req.body);
-    var name = req.body.name;
-    var email = req.body.email;
-    var password = req.body.password;
+    let name = req.body.name;
+    let email = req.body.email;
+    let password = req.body.password;
 
-    var schema = Joi.object().keys({
+    let schema = Joi.object().keys({
         name: Joi.string().required(),
         email: Joi.string().email({ minDomainAtoms: 2 }),
         password: Joi.any().required(),
     });
 
-    var validateReq = Joi.validate({ name, email, password }, schema);
-    console.log("validateReq----->", validateReq);
+    let validateReq = Joi.validate({ name, email, password }, schema);
     if (validateReq.error) {
         console.log(validateReq.error);
         return response.parameterMissingResponse(res, "", []);
@@ -91,7 +85,6 @@ function signupWaterfall(req, res) {
         },
         function (result, callback) {
             if (result.length != 0) {
-                console.log("Email already exits...")
                 return response.actionCompleteResponse(res, "Email already exits...");
             }
             else {
@@ -100,7 +93,7 @@ function signupWaterfall(req, res) {
         },
 
         function (callback) {
-            var insert = `INSERT into users (name, email, password) values(
+            let insert = `INSERT into users (name, email, password) values(
     "${name}",
     "${email}",
     "${password}")`;
@@ -123,7 +116,7 @@ function signupWaterfall(req, res) {
 }
 
 function exampleAuto(req, res) {
-    var name = req.body.name;
+    let name = req.body.name;
     async.auto({
 
         getData1(cb) {
@@ -138,8 +131,6 @@ function exampleAuto(req, res) {
         },
 
         getData: ['getData1', 'getData2', function (dataToBeUsed, cb) {
-            console.log("getData1 result>>", dataToBeUsed.getData1)
-            console.log("getData2 result>>", dataToBeUsed.getData2);
             return response.actionCompleteResponse(res, dataToBeUsed);
         }]
     });
@@ -147,31 +138,26 @@ function exampleAuto(req, res) {
 
 
 function checkEmail(email, callback) {
-    console.log("email", email);
     emailExistence.check(email, function (error, response) {
         if (error) {
             console.log(error);
         }
-        console.log('res: ' + response);
         return callback(null, response);
     });
 };
 
 function checkEmailExistence(req, res) {
-    console.log("req.body------>", req.body);
-    var email = req.body.email;
+    let email = req.body.email;
 
-    var schema = Joi.object().keys({
+    let schema = Joi.object().keys({
         email: Joi.string().required()
     });
 
-    var validateReq = Joi.validate({ email }, schema);
-    console.log("validateReq----->", validateReq);
+    let validateReq = Joi.validate({ email }, schema);
     return new Promise((resolve, reject) => {
         Promise.coroutine(function* () {
-            var emailExistenceCheck = Promise.promisify(checkEmail);
-            var CheckEmailExistence = yield emailExistenceCheck(email);
-            console.log("CheckEmailExistence------->>", CheckEmailExistence);
+            let emailExistenceCheck = Promise.promisify(checkEmail);
+            let CheckEmailExistence = yield emailExistenceCheck(email);
             if (CheckEmailExistence == true) {
                 return "Email exists";
             } else {
@@ -188,41 +174,35 @@ function checkEmailExistence(req, res) {
 }
 
 function examples(req, res) {
-    console.log("req.body------>", req.body);
-    var name = req.body.name;
-    var email = req.body.email;
-    var password = req.body.password;
+    let name = req.body.name;
+    let email = req.body.email;
+    let password = req.body.password;
 
-    var schema = Joi.object().keys({
+    let schema = Joi.object().keys({
         name: Joi.string().required(),
         email: Joi.string().email({ minDomainAtoms: 2 }),
         password: Joi.any().required(),
     });
 
-    var validateReq = Joi.validate({ name, email, password }, schema);
-    console.log("validateReq----->", validateReq);
+    let validateReq = Joi.validate({ name, email, password }, schema);
     if (validateReq.error) {
         console.log(validateReq.error);
         return response.parameterMissingResponse(res, "", []);
     }
     Promise.coroutine(function* () {
-        var autoReq = {
+        let autoReq = {
             name: name
         }
-        var autoEx = yield commonFunction.makeRequest(config.get("api_url") + "auto", autoReq);
-        console.log("autoEx--------->", autoEx);
-        var reqBody = {
+        let autoEx = yield commonFunction.makeRequest(config.get("api_url") + "auto", autoReq);
+        let reqBody = {
             name: name,
             email: email,
             password: password
         }
-        var promiseEx = yield commonFunction.makeRequest(config.get("api_url") + "sign_up", reqBody);
-        console.log("promiseEx--------->", promiseEx);
-        var waterfallEx = yield commonFunction.makeRequest(config.get("api_url") + "signup_waterfall", reqBody);
-        console.log("waterfallEx--------->", waterfallEx);
-        var awaitEx = yield commonFunction.makeRequest(config.get("api_url") + "signup_await", reqBody);
-        console.log("awaitEx--------->", awaitEx);
-        var result = {
+        let promiseEx = yield commonFunction.makeRequest(config.get("api_url") + "sign_up", reqBody);
+        let waterfallEx = yield commonFunction.makeRequest(config.get("api_url") + "signup_waterfall", reqBody);
+        let awaitEx = yield commonFunction.makeRequest(config.get("api_url") + "signup_await", reqBody);
+        let result = {
             "auto_response": autoEx.data,
             "promise_response": promiseEx.data,
             "waterfall_response": waterfallEx.data,
@@ -239,37 +219,32 @@ function examples(req, res) {
 }
 
 async function signupAwait(req, res) {
-    console.log("req.body------>", req.body);
-    var name = req.body.name;
-    var email = req.body.email;
-    var password = req.body.password;
+    let name = req.body.name;
+    let email = req.body.email;
+    let password = req.body.password;
 
-    var schema = Joi.object().keys({
+    let schema = Joi.object().keys({
         name: Joi.string().required(),
         email: Joi.string().email({ minDomainAtoms: 2 }),
         password: Joi.any().required(),
     });
 
-    var validateReq = Joi.validate({ name, email, password }, schema);
-    console.log("validateReq----->", validateReq);
+    let validateReq = Joi.validate({ name, email, password }, schema);
     if (validateReq.error) {
         console.log(validateReq.error);
         return response.parameterMissingResponse(res, "", []);
     }
     try {
-        var fetch = await commonFunction.fetchDataFromTable(email, password);
-        console.log("fetch-------->", fetch);
+        let fetch = await commonFunction.fetchDataFromTable(email, password);
         if (fetch) {
             return response.actionCompleteResponse(res, "email already exists");
         }
-        var insertObj = {
+        let insertObj = {
             name: name,
             email: email,
             password: password,
         }
-        console.log("insertObj-------->", insertObj);
-        var insert = await commonFunction.insertIntoTable("users", insertObj);
-        console.log("insert-------->", insert);
+        let insert = await commonFunction.insertIntoTable("users", insertObj);
         if (insert.affectedRows == 1) {
             return response.actionCompleteResponse(res, "Data successfully inserted");
         }
@@ -282,24 +257,22 @@ async function signupAwait(req, res) {
 }
 
 function promiseToCb(req, res) {
-    console.log("req.body------>", req.body);
-    var name = req.body.name;
-    var email = req.body.email;
-    var password = req.body.password;
+    let name = req.body.name;
+    let email = req.body.email;
+    let password = req.body.password;
 
-    var schema = Joi.object().keys({
+    let schema = Joi.object().keys({
         name: Joi.string().required(),
         email: Joi.string().email({ minDomainAtoms: 2 }),
         password: Joi.any().required(),
     });
 
-    var validateReq = Joi.validate({ name, email, password }, schema);
-    console.log("validateReq----->", validateReq);
+    let validateReq = Joi.validate({ name, email, password }, schema);
     if (validateReq.error) {
         console.log(validateReq.error);
         return response.parameterMissingResponse(res, "", []);
     }
-    var data = {
+    let data = {
         email: email,
         password: password
     }
@@ -307,12 +280,11 @@ function promiseToCb(req, res) {
         one: function (callback) {
             setTimeout(function () {
                 Promise.coroutine(function* () {
-                    var fetch = yield commonFunction.fetchDataFromTable(data.email, data.password);
+                    let fetch = yield commonFunction.fetchDataFromTable(data.email, data.password);
                     if (fetch) {
                         return ("email already exists");
                     }
                 })().then(function (result) {
-                    console.log("result-------------->", result);
                     callback(null, result);
                 }, function (error) {
                     callback(null, error);
@@ -329,7 +301,6 @@ function promiseToCb(req, res) {
             if (error) {
                 return response.sendActionFailedResponse(res, [], error);
             }
-            console.log("result------------>", results);
             return response.actionCompleteResponse(res, results);
         });
 }
@@ -349,31 +320,71 @@ async function timerExample() {
 }
 
 async function setImEx(req, res) {
-    console.log("req.body------>", req.body);
-    var email = req.body.email;
-    var password = req.body.password;
+    let email = req.body.email;
+    let password = req.body.password;
 
-    var schema = Joi.object().keys({
+    let schema = Joi.object().keys({
         email: Joi.string().email({ minDomainAtoms: 2 }),
         password: Joi.string().regex(/^[a-zA-Z0-9]{3,30}$/),
     });
 
-    var validateReq = Joi.validate({ email, password }, schema);
-    console.log("validateReq----->", validateReq);
+    let validateReq = Joi.validate({ email, password }, schema);
     if (validateReq.error) {
         console.log(validateReq.error);
         return response.parameterMissingResponse(res, "", []);
     }
     setTimeout(() => {
-        console.log('timeout');
-        var fetch = commonFunction.fetchDataFromTable(email, password);
-        console.log("fetch-------->", fetch);
+        let fetch = commonFunction.fetchDataFromTable(email, password);
     }, 0);
 
     setImmediate(() => {
-        console.log('immediate')
-        var fetch = commonFunction.fetchDataFromTable(email, password);
-        console.log("fetch---setImmediate----->", fetch);
+        let fetch = commonFunction.fetchDataFromTable(email, password);
     })
     return response.actionCompleteResponse(res, fetch);
 }
+
+/*
+ Here we are recursively calling the step function from the setImmediate handler.
+ The nextTick handler will run at the end of the current operation interrupting the event loop,
+ so even though it was registered second it will actually run first.
+
+ Calling nextTick recursively can end up blocking the event loop from continuing.
+ SetImmediate sfire the check phase of the event loop, allowing event loop to continue.
+*/
+
+
+function setImmediateEx(req, res){
+    let iteration = req.body.iteration;
+
+    let schema = Joi.object().keys({
+        iteration: Joi.number().integer()
+    });
+
+    let validateReq = Joi.validate({iteration }, schema);
+    if (validateReq.error) {
+        console.log(validateReq.error);
+        return response.parameterMissingResponse(res, "", []);
+    }
+    function step(iteration) {
+        if (iteration === 10){
+            return response.actionCompleteResponse(res, iteration);
+        } 
+        setImmediate(() => {
+          console.log(`setImmediate iteration: ${iteration}`);
+          step(iteration + 1); // Recursive call from setImmediate handler.
+        });
+        process.nextTick(() => {
+          console.log(`nextTick iteration: ${iteration}`);
+        });
+      }
+    step(iteration);
+}
+
+function step(iteration) {
+    if (iteration === 10) return;
+    process.nextTick(() => {
+      console.log(`nextTick iteration: ${iteration}`);
+      step(iteration + 1);
+    });
+  }
+step(0);
